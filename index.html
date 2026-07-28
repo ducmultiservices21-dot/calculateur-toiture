@@ -255,7 +255,7 @@
     </div>
     <table class="detail-table">
       <tr><td>Différence de hauteur (faîtage − gouttière)</td><td id="deltaH">—</td></tr>
-      <tr><td>Demi-largeur de façade</td><td id="demiLargeur">—</td></tr>
+      <tr><td id="porteeLabel">Demi-largeur de façade</td><td id="demiLargeur">—</td></tr>
       <tr><td>Longueur du rampant (Pythagore)</td><td id="rampant">—</td></tr>
       <tr><td>Angle de pente</td><td id="angle">—</td></tr>
       <tr><td>Pente</td><td id="pente">—</td></tr>
@@ -269,9 +269,10 @@
 
     <div class="note">
       Calcul basé sur un modèle simplifié : chaque pan est traité comme un rectangle
-      (rampant × longueur), ce qui convient pour un toit à 2 pans symétrique. Pour une
-      croupe (pans triangulaires en bout de bâtiment), ajustez manuellement ou réduisez
-      la marge en conséquence.
+      (rampant × longueur). Pour 1 pan (toit monopente), la largeur pleine de la façade
+      est utilisée. Pour 2 pans ou plus (faîtage central symétrique), chaque pan couvre
+      une demi-largeur. Pour une croupe (pans triangulaires en bout de bâtiment), ajustez
+      manuellement ou réduisez la marge en conséquence.
     </div>
   </div>
 
@@ -310,7 +311,9 @@ function calculer() {
   }
 
   const deltaH = hFaitage - hGouttiere;
-  const demiLargeur = largeurFacade / 2;
+  // Toit à 1 pan (monopitch) : la pente traverse toute la largeur de façade.
+  // Toit à 2 pans ou plus (faîtage central symétrique) : chaque pan ne couvre qu'une demi-largeur.
+  const demiLargeur = nbPans === 1 ? largeurFacade : largeurFacade / 2;
   const rampant = Math.sqrt(demiLargeur ** 2 + deltaH ** 2); // Pythagore
   const angleRad = Math.atan(deltaH / demiLargeur); // trigonométrie
   const angleDeg = angleRad * (180 / Math.PI);
@@ -329,6 +332,7 @@ function afficherResultat(r) {
     ? `dont ${fmt(r.surfaceBrute)} m² avant marge de ${r.marge}%`
     : '';
   $('deltaH').textContent = fmt(r.deltaH) + ' m';
+  $('porteeLabel').textContent = r.nbPans === 1 ? 'Largeur de façade (pleine)' : 'Demi-largeur de façade';
   $('demiLargeur').textContent = fmt(r.demiLargeur) + ' m';
   $('rampant').textContent = fmt(r.rampant) + ' m';
   $('angle').textContent = fmt(r.angleDeg, 1) + ' °';
