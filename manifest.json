@@ -1,0 +1,17 @@
+{
+  "name": "Calculateur Surface Toiture",
+  "short_name": "Toiture Calc",
+  "description": "Calcul de surface de toiture pour devis (Pythagore + trigonométrie)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#12202b",
+  "theme_color": "#1e405a",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

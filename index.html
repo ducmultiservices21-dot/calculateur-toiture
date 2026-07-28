@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Calculateur Surface Toiture</title>
+<meta name="theme-color" content="#1e405a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --bg:#0f1c25;
+    --card:#16283570;
+    --card-solid:#16283b;
+    --accent:#f28c38;
+    --accent-dark:#d4741f;
+    --text:#f3f6f8;
+    --text-dim:#a9bac5;
+    --border:#26404f;
+    --ok:#4caf7d;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --bg:#eef2f4;
+      --card:#ffffff;
+      --card-solid:#ffffff;
+      --text:#16232b;
+      --text-dim:#5b6b74;
+      --border:#d8e0e4;
+    }
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    min-height:100vh;
+    padding-bottom:40px;
+  }
+  header{
+    background:linear-gradient(135deg,#1e405a,#12202b);
+    padding:22px 18px 26px;
+    text-align:center;
+    border-bottom:3px solid var(--accent);
+  }
+  header h1{
+    margin:0;
+    font-size:1.25rem;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  header p{
+    margin:6px 0 0;
+    color:#c7d3da;
+    font-size:0.85rem;
+  }
+  main{
+    max-width:520px;
+    margin:0 auto;
+    padding:16px;
+  }
+  .card{
+    background:var(--card-solid);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  }
+  .card h2{
+    font-size:1rem;
+    margin:0 0 14px;
+    color:var(--accent);
+  }
+  label{
+    display:block;
+    font-size:0.85rem;
+    color:var(--text-dim);
+    margin:12px 0 4px;
+  }
+  label:first-of-type{margin-top:0;}
+  input[type=number]{
+    width:100%;
+    padding:12px 10px;
+    font-size:1rem;
+    border-radius:9px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text);
+  }
+  input[type=number]:focus{
+    outline:none;
+    border-color:var(--accent);
+  }
+  .row{display:flex;gap:10px;}
+  .row > div{flex:1;}
+  .hint{
+    font-size:0.72rem;
+    color:var(--text-dim);
+    margin-top:3px;
+  }
+  button{
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .btn-primary{
+    width:100%;
+    padding:14px;
+    margin-top:18px;
+    background:var(--accent);
+    border:none;
+    border-radius:10px;
+    color:#1a1200;
+    font-size:1rem;
+    font-weight:600;
+  }
+  .btn-primary:active{background:var(--accent-dark);}
+  #result{display:none;}
+  #result.show{display:block;}
+  .surface-total{
+    text-align:center;
+    padding:14px 0 6px;
+  }
+  .surface-total .value{
+    font-size:2.3rem;
+    font-weight:700;
+    color:var(--accent);
+  }
+  .surface-total .unit{
+    font-size:1.1rem;
+    color:var(--text-dim);
+  }
+  .detail-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    font-size:0.85rem;
+  }
+  .detail-table td{
+    padding:7px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .detail-table td:last-child{
+    text-align:right;
+    font-weight:600;
+  }
+  .detail-table tr:last-child td{border-bottom:none;}
+  .save-row{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+  }
+  .save-row input{flex:1;}
+  .btn-secondary{
+    padding:12px 16px;
+    background:transparent;
+    border:1px solid var(--accent);
+    color:var(--accent);
+    border-radius:9px;
+    font-size:0.9rem;
+    white-space:nowrap;
+  }
+  .history-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+    font-size:0.88rem;
+  }
+  .history-item:last-child{border-bottom:none;}
+  .history-item .name{font-weight:600;}
+  .history-item .meta{color:var(--text-dim);font-size:0.75rem;}
+  .history-item .del{
+    background:none;border:none;color:#d9534f;font-size:1.1rem;padding:4px 8px;
+  }
+  .empty{color:var(--text-dim);font-size:0.85rem;text-align:center;padding:10px 0;}
+  #installBtn{display:none;}
+  #installBtn.show{
+    display:block;
+    width:100%;
+    padding:12px;
+    margin-bottom:16px;
+    background:var(--ok);
+    border:none;
+    border-radius:10px;
+    color:#fff;
+    font-weight:600;
+  }
+  .note{
+    font-size:0.75rem;
+    color:var(--text-dim);
+    line-height:1.4;
+    margin-top:10px;
+    border-top:1px solid var(--border);
+    padding-top:10px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏠 Calculateur Surface Toiture</h1>
+  <p>Pythagore &amp; trigonométrie — pour vos devis</p>
+</header>
+
+<main>
+  <button id="installBtn">📲 Installer l'application</button>
+
+  <div class="card">
+    <h2>Dimensions du bâtiment</h2>
+
+    <label for="nbPans">Nombre de pans de toiture</label>
+    <input type="number" id="nbPans" inputmode="numeric" min="1" step="1" value="2">
+    <div class="hint">Ex : 2 pour un toit traditionnel, 4 pour une croupe</div>
+
+    <div class="row">
+      <div>
+        <label for="hGouttiere">Hauteur gouttière (m)</label>
+        <input type="number" id="hGouttiere" inputmode="decimal" step="0.01" placeholder="ex: 6.00">
+      </div>
+      <div>
+        <label for="hFaitage">Hauteur faîtage (m)</label>
+        <input type="number" id="hFaitage" inputmode="decimal" step="0.01" placeholder="ex: 9.20">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="largeurFacade">Largeur façade (m)</label>
+        <input type="number" id="largeurFacade" inputmode="decimal" step="0.01" placeholder="ex: 8.50">
+      </div>
+      <div>
+        <label for="longueurPan">Longueur du pan (m)</label>
+        <input type="number" id="longueurPan" inputmode="decimal" step="0.01" placeholder="ex: 12.00">
+      </div>
+    </div>
+
+    <label for="marge">Marge chutes / recouvrement (%)</label>
+    <input type="number" id="marge" inputmode="decimal" step="1" value="0" min="0">
+    <div class="hint">Optionnel — ajoute un pourcentage pour pertes de matériaux</div>
+
+    <button class="btn-primary" id="calcBtn">Calculer la surface</button>
+  </div>
+
+  <div class="card" id="result">
+    <h2>Résultat</h2>
+    <div class="surface-total">
+      <div class="value"><span id="surfaceTotale">0</span> <span class="unit">m²</span></div>
+      <div class="hint" id="surfaceBrute"></div>
+    </div>
+    <table class="detail-table">
+      <tr><td>Différence de hauteur (faîtage − gouttière)</td><td id="deltaH">—</td></tr>
+      <tr><td>Demi-largeur de façade</td><td id="demiLargeur">—</td></tr>
+      <tr><td>Longueur du rampant (Pythagore)</td><td id="rampant">—</td></tr>
+      <tr><td>Angle de pente</td><td id="angle">—</td></tr>
+      <tr><td>Pente</td><td id="pente">—</td></tr>
+      <tr><td>Surface d'un pan</td><td id="surfacePan">—</td></tr>
+    </table>
+
+    <div class="save-row">
+      <input type="text" id="saveName" placeholder="Nom du client / chantier">
+      <button class="btn-secondary" id="saveBtn">Enregistrer</button>
+    </div>
+
+    <div class="note">
+      Calcul basé sur un modèle simplifié : chaque pan est traité comme un rectangle
+      (rampant × longueur), ce qui convient pour un toit à 2 pans symétrique. Pour une
+      croupe (pans triangulaires en bout de bâtiment), ajustez manuellement ou réduisez
+      la marge en conséquence.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Devis enregistrés</h2>
+    <div id="historyList"><div class="empty">Aucun devis enregistré pour l'instant</div></div>
+  </div>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function fmt(n, decimals = 2) {
+  return n.toLocaleString('fr-FR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+}
+
+function calculer() {
+  const nbPans = parseFloat($('nbPans').value);
+  const hGouttiere = parseFloat($('hGouttiere').value);
+  const hFaitage = parseFloat($('hFaitage').value);
+  const largeurFacade = parseFloat($('largeurFacade').value);
+  const longueurPan = parseFloat($('longueurPan').value);
+  const marge = parseFloat($('marge').value) || 0;
+
+  if (!nbPans || !largeurFacade || !longueurPan || isNaN(hGouttiere) || isNaN(hFaitage)) {
+    alert('Merci de remplir tous les champs avec des valeurs valides.');
+    return null;
+  }
+  if (hFaitage <= hGouttiere) {
+    alert('La hauteur du faîtage doit être supérieure à la hauteur de la gouttière.');
+    return null;
+  }
+  if (largeurFacade <= 0 || longueurPan <= 0) {
+    alert('La largeur de façade et la longueur du pan doivent être positives.');
+    return null;
+  }
+
+  const deltaH = hFaitage - hGouttiere;
+  const demiLargeur = largeurFacade / 2;
+  const rampant = Math.sqrt(demiLargeur ** 2 + deltaH ** 2); // Pythagore
+  const angleRad = Math.atan(deltaH / demiLargeur); // trigonométrie
+  const angleDeg = angleRad * (180 / Math.PI);
+  const pentePourcent = (deltaH / demiLargeur) * 100;
+  const surfacePan = rampant * longueurPan;
+  const surfaceBrute = surfacePan * nbPans;
+  const surfaceTotale = surfaceBrute * (1 + marge / 100);
+
+  return { nbPans, hGouttiere, hFaitage, largeurFacade, longueurPan, marge,
+    deltaH, demiLargeur, rampant, angleDeg, pentePourcent, surfacePan, surfaceBrute, surfaceTotale };
+}
+
+function afficherResultat(r) {
+  $('surfaceTotale').textContent = fmt(r.surfaceTotale);
+  $('surfaceBrute').textContent = r.marge > 0
+    ? `dont ${fmt(r.surfaceBrute)} m² avant marge de ${r.marge}%`
+    : '';
+  $('deltaH').textContent = fmt(r.deltaH) + ' m';
+  $('demiLargeur').textContent = fmt(r.demiLargeur) + ' m';
+  $('rampant').textContent = fmt(r.rampant) + ' m';
+  $('angle').textContent = fmt(r.angleDeg, 1) + ' °';
+  $('pente').textContent = fmt(r.pentePourcent, 1) + ' %';
+  $('surfacePan').textContent = fmt(r.surfacePan) + ' m²';
+  $('result').classList.add('show');
+  $('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+let dernierResultat = null;
+
+$('calcBtn').addEventListener('click', () => {
+  const r = calculer();
+  if (r) {
+    dernierResultat = r;
+    afficherResultat(r);
+  }
+});
+
+// --- Historique (localStorage) ---
+const STORAGE_KEY = 'toiture-devis-historique';
+
+function chargerHistorique() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function sauvegarderHistorique(liste) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(liste));
+}
+
+function renderHistorique() {
+  const liste = chargerHistorique();
+  const container = $('historyList');
+  if (liste.length === 0) {
+    container.innerHTML = '<div class="empty">Aucun devis enregistré pour l\'instant</div>';
+    return;
+  }
+  container.innerHTML = '';
+  liste.slice().reverse().forEach((item) => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div>
+        <div class="name">${item.nom}</div>
+        <div class="meta">${item.date} — ${item.nbPans} pans</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div><strong>${fmt(item.surfaceTotale)} m²</strong></div>
+        <button class="del" data-id="${item.id}">✕</button>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+
+  container.querySelectorAll('.del').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-id');
+      const nouvelleListe = chargerHistorique().filter((i) => String(i.id) !== id);
+      sauvegarderHistorique(nouvelleListe);
+      renderHistorique();
+    });
+  });
+}
+
+$('saveBtn').addEventListener('click', () => {
+  if (!dernierResultat) return;
+  const nom = $('saveName').value.trim() || 'Sans nom';
+  const liste = chargerHistorique();
+  liste.push({
+    id: Date.now(),
+    nom,
+    date: new Date().toLocaleDateString('fr-FR'),
+    nbPans: dernierResultat.nbPans,
+    surfaceTotale: dernierResultat.surfaceTotale,
+  });
+  sauvegarderHistorique(liste);
+  $('saveName').value = '';
+  renderHistorique();
+});
+
+renderHistorique();
+
+// --- Installation PWA ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $('installBtn').classList.add('show');
+});
+
+$('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $('installBtn').classList.remove('show');
+});
+
+window.addEventListener('appinstalled', () => {
+  $('installBtn').classList.remove('show');
+});
+
+// --- Service worker ---
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
